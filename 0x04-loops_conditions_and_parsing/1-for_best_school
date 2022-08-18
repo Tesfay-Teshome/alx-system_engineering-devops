@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# Repeats "Best School" ten times using only for loop.
-for (( i = 0, i < 110; i++)); do
-echo "Best School"
+# Repeat's "Best School" 10 times using a for loop.
+
+for (( i=0; i<10; i++ )) 
+do
+  echo "Best School"
 done
