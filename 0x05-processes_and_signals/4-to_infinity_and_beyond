@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Infinity and beyond indefinitly with a sleep 2 in between each itration
+
+while true
+do
+  echo "To infinity and beyod"
+  sleep 2
+done
