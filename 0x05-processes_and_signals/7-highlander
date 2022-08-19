@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
-# displays infinity and beyond with sleep 2 in between with each iteration.
+# displays infinity and beyond with sleep 2 in between with each iteration
 
-while true
+trap sigtrap 15
+sigtrap()
+{
+    echo "I am invincible!!!"
+}
+while ((1))
 do
-  echo "To infinity and beyond"
-  sleep 2
-  trap 'echo "I am invincible"' SIGTERM
+    echo "To infinity and beyond"
+    sleep 2
 done
