@@ -1,3 +1,10 @@
+maxcon 2048
+
+tune.ssl.default-dh-param 2048
+
+ption forwardfor
+option http-server-close
+
 global
         log /dev/log    local0
         log /dev/log    local1 notice
@@ -44,7 +51,9 @@ backend back
         server 32448-web-02 54.237.2.122:80 check
 
 frontend front
-        bind *:443 ssl crt /etc/letsencrypt/live/www.tesfix-tech.tech/fullchain.pem
+        bind *:443 ssl crt ssl crt /etc/haproxy/certs/tesfix-tech.tech.pem
+        cl letsencrypt-acl path_beg /.well-known/acme-challenge/
+        use_backend letsencrypt-backend if letsencrypt-acl
         reqadd X-Forwarded-Proto:\ https
         default_backend back
 
@@ -53,3 +62,4 @@ backend back
         redirect scheme https if !{ ssl_fc }
         server 32448-web-01 44.200.170.122:80 check
         server 32448-web-02 54.237.2.122:80 check
+        server letsencrypt 127.0.0.1:54321
