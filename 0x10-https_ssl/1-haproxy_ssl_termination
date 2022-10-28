@@ -1,10 +1,3 @@
-maxcon 2048
-
-tune.ssl.default-dh-param 2048
-
-ption forwardfor
-option http-server-close
-
 global
         log /dev/log    local0
         log /dev/log    local1 notice
@@ -40,26 +33,26 @@ defaults
         errorfile 503 /etc/haproxy/errors/503.http
         errorfile 504 /etc/haproxy/errors/504.http
 
-frontend front
+
+
+frontend main
         bind *:80
-        reqadd X-Forwarded-Proto:\ http
-        default_backend back
+        bind *:443 ssl crt /etc/ssl/www.tesfix-tech.tech/www.tesfix-tech.tech.pem
 
-backend back
-        balance roundrobin
-        server 32448-web-01 44.200.170.122:80 check
-        server 32448-web-02 54.237.2.122:80 check
+        redirect scheme https code 301 if !{ ssl_fc }
 
-frontend front
-        bind *:443 ssl crt ssl crt /etc/haproxy/certs/tesfix-tech.tech.pem
-        cl letsencrypt-acl path_beg /.well-known/acme-challenge/
+        acl letsencrypt-acl path_beg /.well-known/acme-challenge/
         use_backend letsencrypt-backend if letsencrypt-acl
-        reqadd X-Forwarded-Proto:\ https
-        default_backend back
-
-backend back
+        default_backend web-server
+backend web-server
         balance roundrobin
-        redirect scheme https if !{ ssl_fc }
+        option forwardfor
+        http-request set-header X-Forwarded-port %[dst_port]
+        http-request set-header X-Forwarded-proto https if { ssl_fc }
+
+        option httpchk Get / HTTP/1.1\r\nHost:tesfix-tech.tech
         server 32448-web-01 44.200.170.122:80 check
         server 32448-web-02 54.237.2.122:80 check
-        server letsencrypt 127.0.0.1:54321
+
+backend letsencrypt-backend
+        server letsencrypt 127.0.0.1:8888
